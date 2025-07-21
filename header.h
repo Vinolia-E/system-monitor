@@ -98,8 +98,24 @@ struct TX
 
 
 // student TODO : system stats
+// System stats
 string CPUinfo();
 const char *getOsName();
+string getUsername();
+string getHostname();
+struct TaskCounts {
+    int total, running, sleeping, stopped, zombie;
+};
+TaskCounts getTaskCounts();
+CPUStats getCPUStats();
+float calculateCPUUsage();
+float getThermalTemp();
+struct FanInfo {
+    bool enabled;
+    int speed;
+    int level;
+};
+FanInfo getFanInfo();
 
 // student TODO : memory and processes
 
