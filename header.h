@@ -132,4 +132,12 @@ DiskInfo getDiskInfo();
 
 // student TODO : network
 
+Networks getNetworks();
+struct NetStats {
+    map<string, RX> rx;
+    map<string, TX> tx;
+};
+NetStats getNetStats();
+string formatBytes(long long bytes);
+
 #endif
