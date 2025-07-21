@@ -118,6 +118,17 @@ struct FanInfo {
 FanInfo getFanInfo();
 
 // student TODO : memory and processes
+// Memory and processes
+vector<Proc> getProcesses();
+struct MemInfo {
+    long long total, available, used;
+};
+MemInfo getMemInfo();
+MemInfo getSwapInfo();
+struct DiskInfo {
+    long long total, used, available;
+};
+DiskInfo getDiskInfo();
 
 // student TODO : network
 
