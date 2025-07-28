@@ -35,3 +35,24 @@ vector<Proc> getProcesses()
     closedir(proc_dir);
     return processes;
 }
+
+// Implemented `getMemInfo()` to parse `/proc/meminfo` and extract total and 
+// available memory in bytes. The function computes used memory by subtracting 
+// available from total and returns the values in a `MemInfo` struct.
+MemInfo getMemInfo()
+{
+    MemInfo info = {0, 0, 0};
+    ifstream file("/proc/meminfo");
+    string line;
+    while (getline(file, line)) {
+        if (line.find("MemTotal:") != string::npos) {
+            sscanf(line.c_str(), "MemTotal: %lld kB", &info.total);
+            info.total *= 1024;
+        } else if (line.find("MemAvailable:") != string::npos) {
+            sscanf(line.c_str(), "MemAvailable: %lld kB", &info.available);
+            info.available *= 1024;
+        }
+    }
+    info.used = info.total - info.available;
+    return info;
+}
