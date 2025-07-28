@@ -56,3 +56,22 @@ MemInfo getMemInfo()
     info.used = info.total - info.available;
     return info;
 }
+
+MemInfo getSwapInfo()
+{
+    MemInfo info = {0, 0, 0};
+    ifstream file("/proc/meminfo");
+    string line;
+    while (getline(file, line)) {
+        if (line.find("SwapTotal:") != string::npos) {
+            sscanf(line.c_str(), "SwapTotal: %lld kB", &info.total);
+            info.total *= 1024;
+        } else if (line.find("SwapFree:") != string::npos) {
+            long long free;
+            sscanf(line.c_str(), "SwapFree: %lld kB", &free);
+            info.available = free * 1024;
+        }
+    }
+    info.used = info.total - info.available;
+    return info;
+}
