@@ -75,3 +75,15 @@ MemInfo getSwapInfo()
     info.used = info.total - info.available;
     return info;
 }
+
+DiskInfo getDiskInfo()
+{
+    DiskInfo info = {0, 0, 0};
+    struct statvfs stat;
+    if (statvfs("/", &stat) == 0) {
+        info.total = stat.f_blocks * stat.f_frsize;
+        info.available = stat.f_bavail * stat.f_frsize;
+        info.used = info.total - info.available;
+    }
+    return info;
+}
