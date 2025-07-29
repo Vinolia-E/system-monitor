@@ -125,6 +125,36 @@ void systemWindow(const char *id, ImVec2 size, ImVec2 position)
             ImGui::EndTabItem();
         }
 
+        // Thermal Tab
+        if (ImGui::BeginTabItem("Thermal")) {
+            static vector<float> thermalHistory;
+            static bool animate = true;
+            static float fps = 60.0f;
+            static float yScale = 100.0f;
+            
+            float temp = getThermalTemp();
+            
+            if (animate) {
+                thermalHistory.push_back(temp);
+                if (thermalHistory.size() > 100) {
+                    thermalHistory.erase(thermalHistory.begin());
+                }
+            }
+            
+            ImGui::Checkbox("Animate", &animate);
+            ImGui::SliderFloat("FPS", &fps, 1.0f, 120.0f);
+            ImGui::SliderFloat("Y Scale", &yScale, 50.0f, 200.0f);
+            
+            if (!thermalHistory.empty()) {
+                ImGui::PlotLines("Temperature", thermalHistory.data(), thermalHistory.size(), 0, 
+                               ("Temp: " + to_string((int)temp) + "°C").c_str(), 0.0f, yScale, ImVec2(0, 80));
+            }
+            
+            ImGui::EndTabItem();
+        }
+        
+        ImGui::EndTabBar();
+        
     }
     ImGui::End();
 }
