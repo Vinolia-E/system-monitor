@@ -152,3 +152,29 @@ CPUStats getCPUStats()
     }
     return stats;
 }
+
+float calculateCPUUsage()
+{
+    static CPUStats prev = {0};
+    CPUStats curr = getCPUStats();
+    
+    long long prevIdle = prev.idle + prev.iowait;
+    long long currIdle = curr.idle + curr.iowait;
+    
+    long long prevNonIdle = prev.user + prev.nice + prev.system + prev.irq + prev.softirq + prev.steal;
+    long long currNonIdle = curr.user + curr.nice + curr.system + curr.irq + curr.softirq + curr.steal;
+    
+    long long prevTotal = prevIdle + prevNonIdle;
+    long long currTotal = currIdle + currNonIdle;
+    
+    long long totalDiff = currTotal - prevTotal;
+    long long idleDiff = currIdle - prevIdle;
+    
+    float usage = 0.0f;
+    if (totalDiff > 0) {
+        usage = (float)(totalDiff - idleDiff) / totalDiff * 100.0f;
+    }
+    
+    prev = curr;
+    return usage;
+}
