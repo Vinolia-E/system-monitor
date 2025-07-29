@@ -92,6 +92,39 @@ void systemWindow(const char *id, ImVec2 size, ImVec2 position)
             
             ImGui::EndTabItem();
         }
+
+         // Fan Tab
+        if (ImGui::BeginTabItem("Fan")) {
+            static vector<float> fanHistory;
+            static bool animate = true;
+            static float fps = 60.0f;
+            static float yScale = 100.0f;
+            
+            FanInfo fan = getFanInfo();
+            
+            ImGui::Text("Status: %s", fan.enabled ? "Enabled" : "Disabled");
+            ImGui::Text("Speed: %d RPM", fan.speed);
+            ImGui::Text("Level: %d", fan.level);
+            
+            if (animate) {
+                fanHistory.push_back((float)fan.speed);
+                if (fanHistory.size() > 100) {
+                    fanHistory.erase(fanHistory.begin());
+                }
+            }
+            
+            ImGui::Checkbox("Animate", &animate);
+            ImGui::SliderFloat("FPS", &fps, 1.0f, 120.0f);
+            ImGui::SliderFloat("Y Scale", &yScale, 50.0f, 200.0f);
+            
+            if (!fanHistory.empty()) {
+                ImGui::PlotLines("Fan Speed", fanHistory.data(), fanHistory.size(), 0, 
+                               ("Speed: " + to_string(fan.speed) + " RPM").c_str(), 0.0f, yScale, ImVec2(0, 80));
+            }
+            
+            ImGui::EndTabItem();
+        }
+
     }
     ImGui::End();
 }
