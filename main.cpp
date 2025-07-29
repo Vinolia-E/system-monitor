@@ -44,12 +44,23 @@ using namespace gl;
 // systemWindow, display information for the system monitorization
 void systemWindow(const char *id, ImVec2 size, ImVec2 position)
 {
-    ImGui::Begin(id);
+ ImGui::Begin(id);
     ImGui::SetWindowSize(id, size);
     ImGui::SetWindowPos(id, position);
 
-    // student TODO : add code here for the system window
-
+    // System information
+    ImGui::Text("Operating System: %s", getOsName());
+    ImGui::Text("User: %s", getUsername().c_str());
+    ImGui::Text("Hostname: %s", getHostname().c_str());
+    
+    TaskCounts tasks = getTaskCounts();
+    ImGui::Text("Total Tasks: %d", tasks.total);
+    ImGui::Text("Running: %d, Sleeping: %d, Stopped: %d, Zombie: %d", 
+                tasks.running, tasks.sleeping, tasks.stopped, tasks.zombie);
+    
+    ImGui::Text("CPU: %s", CPUinfo().c_str());
+    
+    ImGui::Separator();
     ImGui::End();
 }
 
