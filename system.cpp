@@ -202,3 +202,22 @@ float getThermalTemp()
     
     return 0.0f;
 }
+
+FanInfo getFanInfo()
+{
+    FanInfo info = {false, 0, 0};
+    ifstream file("/proc/acpi/ibm/fan");
+    if (file.is_open()) {
+        string line;
+        while (getline(file, line)) {
+            if (line.find("status:") != string::npos) {
+                info.enabled = line.find("enabled") != string::npos;
+            } else if (line.find("speed:") != string::npos) {
+                sscanf(line.c_str(), "speed: %d", &info.speed);
+            } else if (line.find("level:") != string::npos) {
+                sscanf(line.c_str(), "level: %d", &info.level);
+            }
+        }
+    }
+    return info;
+}
