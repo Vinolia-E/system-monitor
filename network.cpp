@@ -58,3 +58,19 @@ NetStats getNetStats()
     
     return stats;
 }
+
+string formatBytes(long long bytes)
+{
+    const char* units[] = {"B", "KB", "MB", "GB"};
+    int unit = 0;
+    double size = (double)bytes;
+    
+    while (size >= 1024.0 && unit < 3) {
+        size /= 1024.0;
+        unit++;
+    }
+    
+    char buffer[64];
+    snprintf(buffer, sizeof(buffer), "%.2f %s", size, units[unit]);
+    return string(buffer);
+}
