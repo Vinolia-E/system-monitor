@@ -138,3 +138,17 @@ TaskCounts getTaskCounts()
     }
     return counts;
 }
+
+CPUStats getCPUStats()
+{
+    CPUStats stats = {0};
+    ifstream file("/proc/stat");
+    string line;
+    if (getline(file, line) && line.find("cpu") == 0) {
+        sscanf(line.c_str(), "cpu %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld",
+               &stats.user, &stats.nice, &stats.system, &stats.idle,
+               &stats.iowait, &stats.irq, &stats.softirq, &stats.steal,
+               &stats.guest, &stats.guestNice);
+    }
+    return stats;
+}
