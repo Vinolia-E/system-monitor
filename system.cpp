@@ -83,3 +83,18 @@ const char *getOsName()
     return "Other";
 #endif
 }
+
+string getUsername()
+{
+    char* user = getenv("USER");
+    return user ? string(user) : "Unknown";
+}
+
+string getHostname()
+{
+    char hostname[HOST_NAME_MAX];
+    if (gethostname(hostname, HOST_NAME_MAX) == 0) {
+        return string(hostname);
+    }
+    return "Unknown";
+}
