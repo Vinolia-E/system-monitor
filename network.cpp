@@ -26,3 +26,35 @@ Networks getNetworks()
     freeifaddrs(ifaddr);
     return networks;
 }
+
+NetStats getNetStats()
+{
+    NetStats stats;
+    ifstream file("/proc/net/dev");
+    string line;
+    
+    getline(file, line);
+    getline(file, line);
+    
+    while (getline(file, line)) {
+        size_t colon = line.find(':');
+        if (colon != string::npos) {
+            string iface = line.substr(0, colon);
+            iface.erase(0, iface.find_first_not_of(" \t"));
+            
+            string data = line.substr(colon + 1);
+            
+            RX rx = {0};
+            TX tx = {0};
+            
+            sscanf(data.c_str(), "%lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld",
+                   &rx.bytes, &rx.packets, &rx.errs, &rx.drop, &rx.fifo, &rx.frame, &rx.compressed, &rx.multicast,
+                   &tx.bytes, &tx.packets, &tx.errs, &tx.drop, &tx.fifo, &tx.colls, &tx.carrier, &tx.compressed);
+            
+            stats.rx[iface] = rx;
+            stats.tx[iface] = tx;
+        }
+    }
+    
+    return stats;
+}
