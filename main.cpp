@@ -61,6 +61,38 @@ void systemWindow(const char *id, ImVec2 size, ImVec2 position)
     ImGui::Text("CPU: %s", CPUinfo().c_str());
     
     ImGui::Separator();
+
+     // Tabbed section for CPU, Fan, Thermal
+    if (ImGui::BeginTabBar("SystemTabs")) {
+        
+        // CPU Tab
+        if (ImGui::BeginTabItem("CPU")) {
+            static vector<float> cpuHistory;
+            static bool animate = true;
+            static float fps = 60.0f;
+            static float yScale = 100.0f;
+            
+            float cpuUsage = calculateCPUUsage();
+            
+            if (animate) {
+                cpuHistory.push_back(cpuUsage);
+                if (cpuHistory.size() > 100) {
+                    cpuHistory.erase(cpuHistory.begin());
+                }
+            }
+            
+            ImGui::Checkbox("Animate", &animate);
+            ImGui::SliderFloat("FPS", &fps, 1.0f, 120.0f);
+            ImGui::SliderFloat("Y Scale", &yScale, 50.0f, 200.0f);
+            
+            if (!cpuHistory.empty()) {
+                ImGui::PlotLines("CPU Usage", cpuHistory.data(), cpuHistory.size(), 0, 
+                               ("CPU: " + to_string((int)cpuUsage) + "%").c_str(), 0.0f, yScale, ImVec2(0, 80));
+            }
+            
+            ImGui::EndTabItem();
+        }
+    }
     ImGui::End();
 }
 
