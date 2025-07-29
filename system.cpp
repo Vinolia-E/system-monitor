@@ -98,3 +98,43 @@ string getHostname()
     }
     return "Unknown";
 }
+
+TaskCounts getTaskCounts()
+{
+    TaskCounts counts = {0, 0, 0, 0, 0};
+    ifstream file("/proc/stat");
+    string line;
+    while (getline(file, line)) {
+        if (line.find("processes") != string::npos) {
+            sscanf(line.c_str(), "processes %d", &counts.total);
+            break;
+        }
+    }
+    
+    DIR* proc_dir = opendir("/proc");
+    if (proc_dir) {
+        struct dirent* entry;
+        while ((entry = readdir(proc_dir)) != nullptr) {
+            if (isdigit(entry->d_name[0])) {
+                string stat_path = "/proc/" + string(entry->d_name) + "/stat";
+                ifstream stat_file(stat_path);
+                if (stat_file.is_open()) {
+                    string line;
+                    getline(stat_file, line);
+                    if (!line.empty()) {
+                        char state;
+                        sscanf(line.c_str(), "%*d %*s %c", &state);
+                        switch (state) {
+                            case 'R': counts.running++; break;
+                            case 'S': case 'D': counts.sleeping++; break;
+                            case 'T': case 't': counts.stopped++; break;
+                            case 'Z': counts.zombie++; break;
+                        }
+                    }
+                }
+            }
+        }
+        closedir(proc_dir);
+    }
+    return counts;
+}
