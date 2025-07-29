@@ -178,3 +178,27 @@ float calculateCPUUsage()
     prev = curr;
     return usage;
 }
+
+float getThermalTemp()
+{
+    ifstream file("/proc/acpi/ibm/thermal");
+    if (file.is_open()) {
+        string line;
+        getline(file, line);
+        if (line.find("temperatures:") != string::npos) {
+            int temp;
+            if (sscanf(line.c_str(), "temperatures: %d", &temp) == 1) {
+                return (float)temp;
+            }
+        }
+    }
+    
+    ifstream hwmon("/sys/class/thermal/thermal_zone0/temp");
+    if (hwmon.is_open()) {
+        int temp;
+        hwmon >> temp;
+        return temp / 1000.0f;
+    }
+    
+    return 0.0f;
+}
